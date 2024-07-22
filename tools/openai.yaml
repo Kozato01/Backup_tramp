@@ -1,0 +1,61 @@
+openapi: 3.0.0
+info:
+  title: API de Verificação de CPF no Banco de Dados SQL
+  description: API para verificar se um CPF existe no banco de dados MySQL. A verificação é feita consultando a tabela `CadastroOperadora` no banco de dados `Webhook_Comp`.
+  version: 1.0.0
+servers:
+  - url: https://fdd9-138-219-240-95.ngrok-free.app
+    description: Servidor de desenvolvimento usando ngrok
+paths:
+  /return_bank:
+    get:
+      summary: Verificar Existência de CPF
+      description: Verifica se um CPF existe no banco de dados configurado e retorna o resultado.
+      parameters:
+        - in: query
+          name: cpf
+          schema:
+            type: string
+            pattern: '^\d{11}$'  # CPF deve ter 11 dígitos
+          required: true
+          description: O CPF a ser verificado, deve ser um número de 11 dígitos.
+          example: "98765432109"
+      responses:
+        '200':
+          description: Resultado da Verificação de CPF
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  valor:
+                    type: boolean
+                    description: Indica se o CPF existe no banco de dados. `true` se existir, `false` caso contrário.
+                    example: true
+                  frase:
+                    type: string
+                    description: Frase explicativa sobre o resultado da verificação.
+                    example: "Esse é o valor retornado do banco de dados."
+        '400':
+          description: Requisição Inválida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensagem de erro indicando que o CPF é obrigatório ou inválido.
+                    example: "CPF is required"
+        '500':
+          description: Erro no Servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    description: Mensagem de erro indicando um problema no servidor ao processar a solicitação.
+                    example: "Database connection error"
+
